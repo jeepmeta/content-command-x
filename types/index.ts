@@ -1,0 +1,42 @@
+export type MediaType = 'image' | 'video' | 'gif' | null;
+export type PostStatus = 'draft' | 'planned';
+export type Day = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
+
+export interface Post {
+  id: string;
+  content: string;
+  category: string;
+  media: MediaType;
+  status: PostStatus;
+  plannedWeekId: string | null;
+  plannedDay: Day | null;
+  plannedSlot: number | null;
+}
+
+export interface Week {
+  id: string;
+  name: string;
+}
+
+export interface Topic {
+  name: string;
+  iconName: string;
+  colorName: string;
+}
+
+export interface ColorPreset {
+  name: string;
+  text: string;
+  bg: string;
+  border: string;
+  fill: string;
+  hex: string;
+}
+
+export interface TopicConfig {
+  icon: any;
+  color: string;
+  bg: string;
+  border: string;
+  fill: string;
+}
