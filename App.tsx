@@ -38,7 +38,7 @@ export default function ContentCommandX() {
     schedulePostToSlot, unschedulePost,
     addWeek, deleteWeek, addTopic, removeTopic,
     selectedWeek, draftPosts, plannedPostsForWeek,
-    getPostInSlot, getWeeklyTopicCounts, weeklyPlannedCount,
+    getPostInSlot, weeklyTopicCounts, weeklyPlannedCount,
     totalRequired, progressPercentage, filteredDrafts, getTopicConfig
   } = store;
 
@@ -163,10 +163,10 @@ export default function ContentCommandX() {
           <TouchableOpacity
             key={week.id}
             onPress={() => setSelectedWeekId(week.id)}
-            style=[
+            style={[
               styles.weekPill,
               isSelected && styles.weekPillActive
-            ]
+            ]}
           >
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 6 }}>
               <Calendar size={14} color={isSelected ? THEME.accent : THEME.textMuted} />
@@ -262,7 +262,7 @@ export default function ContentCommandX() {
         </View>
         <View style={styles.progressBarBg}>
           <View 
-            style=[
+            style={[
               styles.progressBarFill, 
               { width: `${progressPercentage}%` },
               progressPercentage === 100 && { backgroundColor: THEME.success }
@@ -311,13 +311,13 @@ export default function ContentCommandX() {
             <TouchableOpacity 
               key={cat.name}
               onPress={() => setFilter(cat.name)}
-              style=[
+              style={[
                 styles.filterPill, 
                 isActive && { backgroundColor: config.bg, borderColor: config.border }
-              ]
+              ]}
             >
               <Icon size={14} color={isActive ? config.color : THEME.textMuted} />
-              <Text style=[
+              <Text style={[
                 styles.filterText, 
                 isActive && { color: config.color }
               ]}>
@@ -395,10 +395,10 @@ export default function ContentCommandX() {
               <TouchableOpacity
                 key={opt.name}
                 onPress={() => setNewTopicColor(opt.name)}
-                style=[
+                style={[
                   styles.colorBtn,
                   active && { borderColor: opt.hex, backgroundColor: opt.bg }
-                ]
+                ]}
               >
                 <View style={[styles.colorDot, { backgroundColor: opt.hex }]} />
                 <Text style={[styles.colorName, active && { color: opt.text }]}>{opt.name}</Text>
@@ -516,10 +516,10 @@ export default function ContentCommandX() {
                   <TouchableOpacity
                     key={cat.name}
                     onPress={() => setFormData({ ...formData, category: cat.name })}
-                    style=[
+                    style={[
                       styles.topicSelectPill,
                       active && { backgroundColor: config.bg, borderColor: config.border }
-                    ]
+                    ]}
                   >
                     <Icon size={14} color={active ? config.color : THEME.textMuted} />
                     <Text style={[styles.topicSelectText, active && { color: config.color }]}>{cat.name}</Text>

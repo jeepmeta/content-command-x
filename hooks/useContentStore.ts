@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Hash } from 'lucide-react-native';
 import { Post, Week, Topic, Day } from '../types';
@@ -60,11 +60,26 @@ export function useContentStore() {
     }
   }, []);
 
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const scheduleSave = useCallback((newState: ContentState) => {
+    if (saveTimer.current) {
+      clearTimeout(saveTimer.current);
+    }
+    saveTimer.current = setTimeout(() => {
+      saveToStorage(newState);
+    }, 250);
+  }, [saveToStorage]);
+
   useEffect(() => {
     if (isLoaded) {
-      saveToStorage(state);
+      scheduleSave(state);
     }
-  }, [state.weeks, state.topics, state.posts, state.selectedWeekId, isLoaded, saveToStorage]);
+    return () => {
+      if (saveTimer.current) {
+        clearTimeout(saveTimer.current);
+      }
+    };
+  }, [state, isLoaded, scheduleSave]);
 
   useEffect(() => {
     loadFromStorage();
@@ -228,16 +243,21 @@ export function useContentStore() {
     state.posts.filter(p => p.status === 'planned' && p.plannedWeekId === state.selectedWeekId)
   , [state.posts, state.selectedWeekId]);
 
-  const getPostInSlot = useCallback((day: Day, slot: number): Post | undefined => {
-    return state.posts.find(
-      p => p.status === 'planned' && 
-           p.plannedWeekId === state.selectedWeekId && 
-           p.plannedDay === day && 
-           p.plannedSlot === slot
-    );
-  }, [state.posts, state.selectedWeekId]);
+  const postsBySlot = useMemo(() => {
+    const map: Record<string, Post> = {};
+    plannedPostsForWeek.forEach(post => {
+      if (post.plannedDay && post.plannedSlot != null) {
+        map[`${post.plannedDay}:${post.plannedSlot}`] = post;
+      }
+    });
+    return map;
+  }, [plannedPostsForWeek]);
 
-  const getWeeklyTopicCounts = useMemo(() => {
+  const getPostInSlot = useCallback((day: Day, slot: number): Post | undefined => {
+    return postsBySlot[`${day}:${slot}`];
+  }, [postsBySlot]);
+
+  const weeklyTopicCounts = useMemo(() => {
     const counts: Record<string, number> = {};
     state.topics.forEach(t => { counts[t.name] = 0; });
     plannedPostsForWeek.forEach(p => {
@@ -247,7 +267,18 @@ export function useContentStore() {
     return counts;
   }, [plannedPostsForWeek, state.topics]);
 
-  const weeklyPlannedCount = plannedPostsForWeek.length;
+  const weekPlannedCounts = useMemo(() => {
+    const counts: Record<string, number> = {};
+    state.weeks.forEach(w => { counts[w.id] = 0; });
+    state.posts.forEach(post => {
+      if (post.status === 'planned' && post.plannedWeekId) {
+        counts[post.plannedWeekId] = (counts[post.plannedWeekId] ?? 0) + 1;
+      }
+    });
+    return counts;
+  }, [state.posts, state.weeks]);
+
+  const weeklyPlannedCount = weekPlannedCounts[state.selectedWeekId] ?? 0;
   const totalRequired = DAYS.length * SLOTS_PER_DAY;
   const progressPercentage = Math.min(Math.round((weeklyPlannedCount / totalRequired) * 100), 100);
 
@@ -255,6 +286,35 @@ export function useContentStore() {
     if (state.filter === 'All') return draftPosts;
     return draftPosts.filter(p => p.category === state.filter);
   }, [draftPosts, state.filter]);
+
+  const topicMap = useMemo(() => {
+    return state.topics.reduce<Record<string, Topic>>((acc, topic) => {
+      acc[topic.name] = topic;
+      return acc;
+    }, {});
+  }, [state.topics]);
+
+  const getTopicConfig = useCallback((categoryName: string) => {
+    const topic = topicMap[categoryName];
+    if (!topic) {
+      return {
+        icon: Hash,
+        color: '#a1a1aa',
+        bg: 'rgba(163,163,172,0.1)',
+        border: 'rgba(163,163,172,0.2)',
+        fill: '#71717a'
+      };
+    }
+    const preset = COLOR_OPTIONS.find(c => c.name === topic.colorName) || COLOR_OPTIONS[0];
+    const IconComp = ICON_MAP[topic.iconName] || Hash;
+    return {
+      icon: IconComp,
+      color: preset.text,
+      bg: preset.bg,
+      border: preset.border,
+      fill: preset.fill
+    };
+  }, [topicMap]);
 
   const getTopicConfig = useCallback((categoryName: string) => {
     const topic = state.topics.find(t => t.name === categoryName);
@@ -297,7 +357,8 @@ export function useContentStore() {
     draftPosts,
     plannedPostsForWeek,
     getPostInSlot,
-    getWeeklyTopicCounts,
+    weeklyTopicCounts,
+    weekPlannedCounts,
     weeklyPlannedCount,
     totalRequired,
     progressPercentage,
