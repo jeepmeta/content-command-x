@@ -1,3 +1,5 @@
+import type { ComponentType } from 'react';
+
 export type MediaType = 'image' | 'video' | 'gif' | null;
 export type PostStatus = 'draft' | 'planned';
 export type Day = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
@@ -34,7 +36,7 @@ export interface ColorPreset {
 }
 
 export interface TopicConfig {
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  icon: ComponentType<{ size?: number; className?: string }>;
   color: string;
   bg: string;
   border: string;
