@@ -1,3 +1,4 @@
+import type { ComponentType } from 'react';
 import {
   Quote,
   Zap,
@@ -93,7 +94,7 @@ export const COLOR_OPTIONS: ColorPreset[] = [
 
 export const ICON_MAP: Record<
   string,
-  React.ComponentType<{ size?: number; className?: string }>
+  ComponentType<{ size?: number; className?: string }>
 > = {
   Quote,
   Zap,
