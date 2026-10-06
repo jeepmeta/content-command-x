@@ -1,0 +1,233 @@
+{
+  "schema_version": "1.0",
+  "document_type": "resume",
+  "candidate": {
+    "name": "J.P. Stovall",
+    "location": "Chattanooga, TN",
+    "work_preference": "Remote",
+    "phone": "423-874-5863",
+    "email": "jpstovall38@gmail.com",
+    "linkedin": "https://linkedin.com/in/j-p-stovall",
+    "github": "https://github.com/jeepmeta"
+  },
+  "target_roles": [
+    "Technical Support Specialist",
+    "Technical Support Representative",
+    "Product Support Specialist",
+    "IT Support Specialist",
+    "Help Desk Technician",
+    "Application Support Specialist",
+    "SaaS Support Specialist",
+    "Customer Technical Support Specialist"
+  ],
+  "professional_summary": "Technical support and customer service professional with 10+ years of experience troubleshooting technology, supporting customers, installing and maintaining hardware, working with proprietary software systems, and resolving technical issues in both field and high-volume support environments. Experienced with residential networking, Wi-Fi, hardware installation, connected devices, audio/video systems, Salesforce, mobile applications, and specialized technology platforms. Hands-on independent software development experience with TypeScript, JavaScript, React, and Tailwind CSS. Known for learning unfamiliar technology quickly, communicating clearly with customers, troubleshooting problems systematically, and working independently with minimal supervision.",
+  "skills": {
+    "technical_support": [
+      "Technical Support",
+      "Troubleshooting",
+      "Customer Support",
+      "Hardware Troubleshooting",
+      "Software Troubleshooting",
+      "Technical Problem Solving",
+      "Issue Resolution",
+      "User Support",
+      "Field Service",
+      "Technical Installation",
+      "System Configuration",
+      "Equipment Maintenance",
+      "AI Tools",
+      "AI Skills"
+    ],
+    "networking_and_hardware": [
+      "Computer Networking",
+      "Network Troubleshooting",
+      "Home Networking",
+      "Wireless Networking",
+      "Wi-Fi",
+      "Wi-Fi Troubleshooting",
+      "Mesh Networking",
+      "Router Configuration",
+      "Hardware Installation",
+      "Hardware Configuration",
+      "Connected Devices",
+      "Audio/Video Equipment",
+      "Home Theater"
+    ],
+    "customer_support": [
+      "Customer Service",
+      "Technical Customer Service",
+      "Customer Communication",
+      "Customer De-escalation",
+      "Conflict Resolution",
+      "Active Listening",
+      "Call Center",
+      "Telephone Support",
+      "Inbound Customer Service"
+    ],
+    "business_and_support_systems": [
+      "Salesforce",
+      "Customer Relationship Management (CRM)",
+      "POS Systems",
+      "Mobile Applications",
+      "Scheduling",
+      "Appointment Scheduling",
+      "Field Service Operations",
+      "Territory Management",
+      "Service Documentation"
+    ],
+    "software_development": [
+      "Software Development",
+      "Web Development",
+      "Front-End Development",
+      "JavaScript",
+      "TypeScript",
+      "React.js",
+      "Tailwind CSS",
+      "Git",
+      "GitHub",
+      "Debugging",
+      "Application Development"
+    ]
+  },
+  "experience": [
+    {
+      "company": "Nielsen",
+      "title": "Field Representative",
+      "start_date": "2020-07",
+      "end_date": "2025-10",
+      "description": "Provided specialized in-home technical support for Nielsen’s proprietary television and audio measurement systems.",
+      "highlights": [
+        "Installed, configured, maintained, and troubleshot proprietary hardware and software integrated with televisions, home theater systems, audio equipment, and residential technology.",
+        "Completed extensive hands-on technical training to independently install, maintain, and troubleshoot specialized Nielsen systems.",
+        "Transitioned to a new Nielsen measurement platform, learning new hardware, software, installation procedures, troubleshooting processes, and maintenance requirements.",
+        "Used Salesforce to manage participant information, appointments, schedules, work assignments, and field-service activities.",
+        "Used mobile applications to troubleshoot issues, manage equipment, document service activity, and maintain or update installed systems.",
+        "Independently managed an assigned geographic territory, including scheduling, travel, equipment, service calls, and daily workload.",
+        "Responded directly to participant calls, providing technical assistance, troubleshooting, answering questions, and resolving concerns.",
+        "Used customer-service and de-escalation techniques when handling frustrated participants or difficult technical situations.",
+        "Maintained company-issued vehicle, equipment, supplies, and resources required to operate the assigned territory.",
+        "Adapted quickly to proprietary technology, unfamiliar systems, and major platform changes while working independently with minimal supervision."
+      ],
+      "skills": [
+        "Technical Support",
+        "Troubleshooting",
+        "Software Troubleshooting",
+        "Hardware Troubleshooting",
+        "Salesforce",
+        "Mobile Applications",
+        "Field Service",
+        "Field Service Operations",
+        "Territory Management",
+        "Scheduling",
+        "Appointment Scheduling",
+        "Service Documentation",
+        "Equipment Maintenance",
+        "Customer Support",
+        "Customer De-escalation"
+      ]
+    },
+    {
+      "company": "Best Buy / Geek Squad",
+      "title": "Double Agent",
+      "start_date": "2015-01",
+      "end_date": "2020-07",
+      "description": "Provided in-home technical installation, configuration, troubleshooting, and customer support across a wide range of residential technology environments.",
+      "highlights": [
+        "Installed, configured, and troubleshot home theater systems, televisions, surround sound, audio/video equipment, and connected devices.",
+        "Designed, installed, configured, and troubleshot residential networking environments, including routers, Wi-Fi, mesh networks, and connected devices.",
+        "Diagnosed connectivity, configuration, and hardware problems and explained technical solutions to customers with varying levels of technical knowledge.",
+        "Delivered and installed major household appliances, including refrigerators, ranges, dishwashers, washers, and dryers.",
+        "Worked independently in customers’ homes while managing appointments, travel, equipment, installation requirements, and customer expectations.",
+        "Provided one-on-one technical support and customer service, including de-escalation when resolving unexpected installation or technical issues.",
+        "Adapted to changing technology and learned new hardware, networking equipment, products, and installation procedures as technologies evolved.",
+        "Maintained high standards for installation quality, safety, technical accuracy, and customer satisfaction."
+      ],
+      "skills": [
+        "Technical Support",
+        "Troubleshooting",
+        "Customer Support",
+        "Computer Networking",
+        "Network Troubleshooting",
+        "Home Networking",
+        "Wireless Networking",
+        "Wi-Fi",
+        "Wi-Fi Troubleshooting",
+        "Mesh Networking",
+        "Router Configuration",
+        "Hardware Installation",
+        "Hardware Troubleshooting",
+        "Audio/Video Equipment",
+        "Home Theater",
+        "Field Service",
+        "Customer Service",
+        "Customer De-escalation"
+      ]
+    },
+    {
+      "company": "Convergys",
+      "title": "Customer Service / Customer Support Representative – DirecTV",
+      "start_date": "2011",
+      "end_date": "2015",
+      "description": "Handled high-volume inbound customer service and technical support calls for DirecTV customers.",
+      "highlights": [
+        "Diagnosed customer issues through structured questioning, troubleshooting, and problem-solving.",
+        "Provided account, service, and technical assistance while maintaining accurate customer information.",
+        "Explained technical and service-related information clearly to customers with varying levels of technical knowledge.",
+        "Used customer-service and de-escalation techniques to handle frustrated customers and resolve difficult interactions.",
+        "Troubleshot service and equipment-related issues while guiding customers through appropriate solutions.",
+        "Worked efficiently in a fast-paced call-center environment while maintaining customer-service and performance standards.",
+        "Documented customer interactions and maintained accurate information throughout the support process.",
+        "Developed strong communication, active listening, and problem-solving skills while supporting a high volume of customers by phone."
+      ],
+      "skills": [
+        "Technical Support",
+        "Troubleshooting",
+        "Customer Support",
+        "Customer Service",
+        "Technical Customer Service",
+        "Call Center",
+        "Telephone Support",
+        "Inbound Customer Service",
+        "Customer De-escalation",
+        "Problem Solving",
+        "Active Listening"
+      ]
+    }
+  ],
+  "additional_experience": [
+    {
+      "name": "Independent Software Development",
+      "category": "Independent Technical Development",
+      "status": "Ongoing",
+      "description": "Build and maintain software projects independently while expanding hands-on knowledge of modern web development and application troubleshooting.",
+      "highlights": [
+        "Develop applications and projects using TypeScript, JavaScript, React, and Tailwind CSS.",
+        "Debug application behavior, identify problems, research solutions, and test changes independently.",
+        "Read and apply technical documentation to learn unfamiliar technologies, tools, and development concepts.",
+        "Build and modify user interfaces while working with application logic, components, styling, and project structure.",
+        "Use Git and GitHub to manage source code and development projects.",
+        "Continuously expand technical knowledge through hands-on development, including learning Rust.",
+        "Apply software-development experience to better understand application behavior and troubleshoot technical problems systematically."
+      ],
+      "skills": [
+        "Software Development",
+        "JavaScript",
+        "TypeScript",
+        "React.js",
+        "Tailwind CSS",
+        "Front-End Development",
+        "Web Development",
+        "Debugging",
+        "Git",
+        "GitHub",
+        "Application Development"
+      ]
+    }
+  ],
+  "education": [
+    {
+      "institution": "Ridgeland High School",
+      "credential": "High School Diploma"
+    }
+  ]
+}

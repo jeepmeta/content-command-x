@@ -23,7 +23,7 @@ Made for account managers and degens who want zero-friction organization without
 ## Tech Stack
 
 | Layer | Tech |
-|-------|------|
+| ------- | ------ |
 | Desktop shell | Tauri 2 (Rust) |
 | Frontend | React 18 + TypeScript |
 | Styling | Tailwind CSS v4 |
@@ -36,7 +36,7 @@ Made for account managers and degens who want zero-friction organization without
 ### Prerequisites
 
 - Node.js 18+
-- Rust (https://rustup.rs)
+- Rust (<https://rustup.rs>)
 - Platform build tools:
   - **macOS**: Xcode Command Line Tools
   - **Windows**: Visual Studio C++ Build Tools
@@ -69,7 +69,7 @@ Binaries land in `src-tauri/target/release/bundle/`.
 
 ## Project Structure
 
-```
+```tree
 content-command-x/
 ├── src/                      # React frontend
 │   ├── App.tsx               # Shell + sidebar + modals
