@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Calendar, Inbox, Settings, Plus } from 'lucide-react';
+import { useState, useEffect, useCallback } from 'react';
+import { Calendar, Inbox, Settings, Plus, X, Keyboard } from 'lucide-react';
 import { useContentStore } from './hooks/useContentStore';
 import Planner from './components/Planner';
 import Vault from './components/Vault';
@@ -7,6 +7,7 @@ import Topics from './components/Topics';
 import PostModal from './components/PostModal';
 import AssignModal from './components/AssignModal';
 import type { Post, Day } from './types';
+import { DAYS } from './constants';
 
 export default function App() {
   const store = useContentStore();
@@ -26,6 +27,7 @@ export default function App() {
   const [newTopicName, setNewTopicName] = useState('');
   const [newTopicIcon, setNewTopicIcon] = useState('Flame');
   const [newTopicColor, setNewTopicColor] = useState('Blue');
+  const [toast, setToast] = useState<string | null>(null);
 
   const {
     weeks,
@@ -33,19 +35,32 @@ export default function App() {
     selectedWeekId,
     activeTab,
     filter,
+    searchQuery,
+    templates,
+    hasSeenOnboarding,
     isLoaded,
     setActiveTab,
     setSelectedWeekId,
     setFilter,
+    setSearchQuery,
+    dismissOnboarding,
     addPost,
     updatePost,
     deletePost,
+    deletePosts,
+    duplicatePost,
+    markAsPosted,
+    markPostsAsPosted,
+    changeCategoryBulk,
     schedulePostToSlot,
     unschedulePost,
     addWeek,
     deleteWeek,
     addTopic,
     removeTopic,
+    saveAsTemplate,
+    deleteTemplate,
+    createFromTemplate,
     selectedWeek,
     draftPosts,
     getPostInSlot,
@@ -56,22 +71,20 @@ export default function App() {
     progressPercentage,
     filteredDrafts,
     getTopicConfig,
+    plannedPostsForWeek,
   } = store;
 
-  if (!isLoaded) {
-    return (
-      <div className="flex h-full items-center justify-center bg-bg">
-        <p className="text-text-muted">Loading your command center...</p>
-      </div>
-    );
-  }
+  const showToast = useCallback((msg: string) => {
+    setToast(msg);
+    setTimeout(() => setToast(null), 2200);
+  }, []);
 
-  const openNewPostModal = () => {
+  const openNewPostModal = useCallback(() => {
     setEditingPost(null);
     const firstTopic = topics[0]?.name || 'Stoicism';
     setFormData({ content: '', category: firstTopic, media: null });
     setIsPostModalOpen(true);
-  };
+  }, [topics]);
 
   const openEditModal = (post: Post) => {
     setEditingPost(post);
@@ -81,7 +94,6 @@ export default function App() {
 
   const savePost = () => {
     if (!formData.content.trim()) return;
-
     if (editingPost) {
       updatePost(editingPost.id, {
         content: formData.content.trim(),
@@ -96,7 +108,7 @@ export default function App() {
   };
 
   const handleDeletePost = (id: string) => {
-    if (window.confirm('Purge this post permanently from your vault and any scheduled weeks?')) {
+    if (window.confirm('Purge this post permanently?')) {
       deletePost(id);
       setIsPostModalOpen(false);
     }
@@ -114,6 +126,12 @@ export default function App() {
     setSelectedSlot(null);
   };
 
+  const handleDropPost = (postId: string, day: Day, slot: number) => {
+    if (!selectedWeekId) return;
+    schedulePostToSlot(postId, selectedWeekId, day, slot);
+    showToast('Scheduled');
+  };
+
   const handleAddWeek = () => {
     if (!newWeekName.trim()) return;
     addWeek(newWeekName.trim());
@@ -126,10 +144,94 @@ export default function App() {
     setNewTopicName('');
   };
 
+  const copyToClipboard = async (text: string, label = 'Copied') => {
+    try {
+      await navigator.clipboard.writeText(text);
+      showToast(label);
+    } catch {
+      showToast('Copy failed');
+    }
+  };
+
+  const formatDayExport = (day: Day) => {
+    const lines: string[] = [`# ${day} — ${selectedWeek?.name || ''}`, ''];
+    for (let s = 1; s <= 5; s++) {
+      const p = getPostInSlot(day, s);
+      if (p) {
+        lines.push(`## Slot ${s} [${p.category}]`);
+        lines.push(p.content);
+        if (p.media) lines.push(`(${p.media})`);
+        lines.push('');
+      }
+    }
+    return lines.join('\n').trim() || `(No posts for ${day})`;
+  };
+
+  const handleCopyDay = (day: Day) => {
+    copyToClipboard(formatDayExport(day), `${day} copied`);
+  };
+
+  const handleCopyWeek = () => {
+    const parts = DAYS.map((d) => formatDayExport(d));
+    copyToClipboard(parts.join('\n\n---\n\n'), 'Week copied');
+  };
+
+  const handleSaveAsTemplate = (postId: string) => {
+    const name = window.prompt('Template name?');
+    if (name?.trim()) {
+      saveAsTemplate(postId, name.trim());
+      showToast('Template saved');
+    }
+  };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      const typing =
+        target.tagName === 'INPUT' ||
+        target.tagName === 'TEXTAREA' ||
+        target.isContentEditable;
+
+      if (e.key === 'Escape') {
+        setIsPostModalOpen(false);
+        setIsAssignModalOpen(false);
+        return;
+      }
+
+      if (typing) return;
+
+      const key = e.key.toLowerCase();
+      if (key === 'c') {
+        e.preventDefault();
+        openNewPostModal();
+      } else if (key === 'v') {
+        e.preventDefault();
+        setActiveTab('vault');
+      } else if (key === 'p') {
+        e.preventDefault();
+        setActiveTab('planner');
+      } else if (key === 't') {
+        e.preventDefault();
+        setActiveTab('topics');
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [openNewPostModal, setActiveTab]);
+
+  if (!isLoaded) {
+    return (
+      <div className="flex h-full items-center justify-center bg-bg">
+        <p className="text-text-muted">Loading your command center...</p>
+      </div>
+    );
+  }
+
   const tabs = [
-    { key: 'planner' as const, label: 'Planner', icon: Calendar },
-    { key: 'vault' as const, label: 'Vault', icon: Inbox },
-    { key: 'topics' as const, label: 'Topics', icon: Settings },
+    { key: 'planner' as const, label: 'Planner', icon: Calendar, hint: 'P' },
+    { key: 'vault' as const, label: 'Vault', icon: Inbox, hint: 'V' },
+    { key: 'topics' as const, label: 'Topics', icon: Settings, hint: 'T' },
   ];
 
   return (
@@ -140,18 +242,25 @@ export default function App() {
           <p className="text-xs font-extrabold tracking-[0.2em] text-accent">JEEPMETA</p>
           <h1 className="text-lg font-extrabold tracking-wide text-text">CONTENT COMMAND</h1>
         </div>
-        <button
-          type="button"
-          onClick={openNewPostModal}
-          className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-extrabold text-bg shadow-lg transition hover:bg-accent-dark"
-        >
-          <Plus size={18} />
-          CRAFT POST
-        </button>
+        <div className="flex items-center gap-2">
+          <div className="mr-2 hidden items-center gap-1 text-[11px] text-text-muted sm:flex">
+            <Keyboard size={12} />
+            <kbd className="rounded bg-card-alt px-1 font-mono">C</kbd> craft
+            <kbd className="ml-1 rounded bg-card-alt px-1 font-mono">V</kbd> vault
+            <kbd className="ml-1 rounded bg-card-alt px-1 font-mono">P</kbd> planner
+          </div>
+          <button
+            type="button"
+            onClick={openNewPostModal}
+            className="inline-flex items-center gap-2 rounded-xl bg-accent px-4 py-2.5 text-sm font-extrabold text-bg shadow-lg transition hover:bg-accent-dark"
+          >
+            <Plus size={18} />
+            CRAFT POST
+          </button>
+        </div>
       </header>
 
       <div className="flex min-h-0 flex-1">
-        {/* Sidebar */}
         <nav className="flex w-48 shrink-0 flex-col gap-1 border-r border-border bg-card-alt p-3">
           {tabs.map((tab) => {
             const Icon = tab.icon;
@@ -168,13 +277,13 @@ export default function App() {
                 }`}
               >
                 <Icon size={18} />
-                {tab.label}
+                <span className="flex-1">{tab.label}</span>
+                <kbd className="rounded bg-bg/50 px-1 font-mono text-[10px] opacity-60">{tab.hint}</kbd>
               </button>
             );
           })}
         </nav>
 
-        {/* Main content */}
         <main className="min-w-0 flex-1">
           {activeTab === 'planner' && (
             <Planner
@@ -192,11 +301,15 @@ export default function App() {
               openEditModal={openEditModal}
               openAssignModalForSlot={openAssignModalForSlot}
               handleUnschedule={unschedulePost}
+              handleMarkPosted={markAsPosted}
               deleteWeek={deleteWeek}
               setSelectedWeekId={setSelectedWeekId}
               newWeekName={newWeekName}
               setNewWeekName={setNewWeekName}
               handleAddWeek={handleAddWeek}
+              onDropPost={handleDropPost}
+              onCopyDay={handleCopyDay}
+              onCopyWeek={handleCopyWeek}
             />
           )}
           {activeTab === 'vault' && (
@@ -204,9 +317,27 @@ export default function App() {
               topics={topics}
               filter={filter}
               setFilter={setFilter}
+              searchQuery={searchQuery}
+              setSearchQuery={setSearchQuery}
               filteredDrafts={filteredDrafts}
+              templates={templates}
               getTopicConfig={getTopicConfig}
               openEditModal={openEditModal}
+              onDuplicate={duplicatePost}
+              onMarkPosted={markAsPosted}
+              onDelete={(id) => {
+                if (window.confirm('Delete this draft?')) deletePost(id);
+              }}
+              onDeleteBulk={deletePosts}
+              onMarkPostedBulk={markPostsAsPosted}
+              onChangeCategoryBulk={changeCategoryBulk}
+              onCreateFromTemplate={(id) => {
+                createFromTemplate(id);
+                showToast('Draft created from template');
+              }}
+              onDeleteTemplate={deleteTemplate}
+              onSaveAsTemplate={handleSaveAsTemplate}
+              onCopyText={(text) => copyToClipboard(text)}
             />
           )}
           {activeTab === 'topics' && (
@@ -245,6 +376,55 @@ export default function App() {
         assignPostToSlot={assignPostToSlot}
         getTopicConfig={getTopicConfig}
       />
+
+      {/* Onboarding */}
+      {!hasSeenOnboarding && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+          <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-card">
+            <div className="mb-4 flex items-start justify-between">
+              <h2 className="text-lg font-extrabold text-text">Welcome to Command Center</h2>
+              <button type="button" onClick={dismissOnboarding} className="text-text-muted">
+                <X size={20} />
+              </button>
+            </div>
+            <ol className="mb-5 space-y-3 text-sm text-text-muted">
+              <li>
+                <strong className="text-text">1. Craft</strong> — Hit{' '}
+                <kbd className="rounded bg-card-alt px-1 font-mono text-xs">C</kbd> or the amber
+                button to drop ideas in the Vault.
+              </li>
+              <li>
+                <strong className="text-text">2. Plan</strong> — Drag a draft onto a slot, or click an
+                empty slot to assign.
+              </li>
+              <li>
+                <strong className="text-text">3. Ship</strong> — Mark posts as posted when they go
+                live. Export a day/week anytime.
+              </li>
+            </ol>
+            <p className="mb-4 text-xs text-text-muted">
+              Shortcuts: <kbd className="rounded bg-card-alt px-1 font-mono">P</kbd> Planner ·{' '}
+              <kbd className="rounded bg-card-alt px-1 font-mono">V</kbd> Vault ·{' '}
+              <kbd className="rounded bg-card-alt px-1 font-mono">T</kbd> Topics ·{' '}
+              <kbd className="rounded bg-card-alt px-1 font-mono">Esc</kbd> close
+            </p>
+            <button
+              type="button"
+              onClick={dismissOnboarding}
+              className="w-full rounded-xl bg-accent py-3 text-sm font-extrabold text-bg hover:bg-accent-dark"
+            >
+              Let's go
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Toast */}
+      {toast && (
+        <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-bold text-text shadow-card">
+          {toast}
+        </div>
+      )}
     </div>
   );
 }
