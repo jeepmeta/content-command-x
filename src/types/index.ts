@@ -1,7 +1,7 @@
 import type { ComponentType } from 'react';
 
 export type MediaType = 'image' | 'video' | 'gif' | null;
-export type PostStatus = 'draft' | 'planned';
+export type PostStatus = 'draft' | 'planned' | 'posted';
 export type Day = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday';
 
 export interface Post {
@@ -24,6 +24,14 @@ export interface Topic {
   name: string;
   iconName: string;
   colorName: string;
+}
+
+export interface Template {
+  id: string;
+  name: string;
+  content: string;
+  category: string;
+  media: MediaType;
 }
 
 export interface ColorPreset {
