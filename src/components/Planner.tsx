@@ -1,4 +1,4 @@
-import { Calendar, Inbox, Plus, Trash2, X } from 'lucide-react';
+import { Calendar, Inbox, Plus, Trash2, X, Image as ImageIcon, Film, Sparkles, Type } from 'lucide-react';
 import type { Day, Post, TopicConfig, Week } from '../types';
 import { DAYS, SLOTS_PER_DAY } from '../constants';
 import CategoryBadge from './CategoryBadge';
@@ -23,6 +23,14 @@ interface PlannerProps {
   newWeekName: string;
   setNewWeekName: (value: string) => void;
   handleAddWeek: () => void;
+}
+
+function MediaIcon({ media, color }: { media: Post['media']; color?: string }) {
+  const style = color ? { color } : undefined;
+  if (media === 'image') return <ImageIcon size={12} style={style} />;
+  if (media === 'video') return <Film size={12} style={style} />;
+  if (media === 'gif') return <Sparkles size={12} style={style} />;
+  return <Type size={12} className="text-neutral" />;
 }
 
 export default function Planner({
@@ -59,19 +67,19 @@ export default function Planner({
             return (
               <div
                 key={topicName}
-                className="inline-flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5"
-                style={{ borderColor: config.border }}
+                className="inline-flex items-center gap-1.5 rounded-xl border px-2.5 py-1.5 shadow-soft"
+                style={{ borderColor: config.border, backgroundColor: config.bg }}
               >
                 <span
                   className="h-2 w-2 rounded-full"
                   style={{ backgroundColor: config.fill }}
                 />
-                <span className="text-[11px] font-bold text-text">{topicName}</span>
+                <span className="text-[11px] font-bold" style={{ color: config.color }}>
+                  {topicName}
+                </span>
                 <span
                   className={`ml-1 rounded-full px-1.5 py-0.5 text-[10px] font-bold ${
-                    count > 0
-                      ? 'bg-accent text-bg'
-                      : 'bg-card text-text-muted'
+                    count > 0 ? 'bg-accent text-bg' : 'bg-card text-text-muted'
                   }`}
                 >
                   {count}
@@ -96,7 +104,7 @@ export default function Planner({
             {weeklyPlannedCount} / {totalRequired}
           </span>
         </div>
-        <div className="h-2.5 overflow-hidden rounded-full bg-card-alt">
+        <div className="h-2.5 overflow-hidden rounded-full bg-card-alt shadow-soft">
           <div
             className="h-full rounded-full transition-all duration-300"
             style={{
@@ -119,7 +127,7 @@ export default function Planner({
               key={week.id}
               type="button"
               onClick={() => setSelectedWeekId(week.id)}
-              className={`flex min-w-[130px] shrink-0 flex-col rounded-xl border p-3 text-left transition ${
+              className={`flex min-w-[130px] shrink-0 flex-col rounded-xl border p-3 text-left shadow-soft transition ${
                 isSelected
                   ? 'border-accent bg-bg'
                   : 'border-border bg-card-alt hover:border-neutral'
@@ -163,7 +171,7 @@ export default function Planner({
           );
         })}
 
-        <div className="flex min-w-[180px] shrink-0 items-center gap-2 rounded-xl border border-border bg-card-alt px-3 py-2">
+        <div className="flex min-w-[180px] shrink-0 items-center gap-2 rounded-xl border border-border bg-card-alt px-3 py-2 shadow-soft">
           <input
             value={newWeekName}
             onChange={(e) => setNewWeekName(e.target.value)}
@@ -202,7 +210,11 @@ export default function Planner({
                         key={`${day}-${slotNum}`}
                         type="button"
                         onClick={() => openEditModal(postInSlot)}
-                        className="rounded-xl border border-border bg-card p-3 text-left transition hover:border-accent/40"
+                        className="rounded-xl border bg-card p-3 text-left shadow-card transition hover:brightness-110"
+                        style={{
+                          borderColor: config.fill,
+                          boxShadow: `0 4px 14px -2px ${config.fill}22`,
+                        }}
                       >
                         <div className="mb-2 flex items-center justify-between">
                           <CategoryBadge
@@ -224,11 +236,12 @@ export default function Planner({
                         <p className="mb-2 line-clamp-2 text-xs leading-relaxed text-text">
                           {postInSlot.content}
                         </p>
-                        <div className="flex items-center justify-between text-[10px] text-text-muted">
-                          {postInSlot.media && (
-                            <span className="font-bold uppercase">{postInSlot.media}</span>
-                          )}
-                          <span className="ml-auto">{postInSlot.content.length}/280</span>
+                        <div className="flex items-center justify-between text-[10px]">
+                          <span className="inline-flex items-center gap-1 font-bold uppercase" style={{ color: config.color }}>
+                            <MediaIcon media={postInSlot.media} color={config.color} />
+                            {postInSlot.media || 'text'}
+                          </span>
+                          <span className="text-text-muted">{postInSlot.content.length}/280</span>
                         </div>
                       </button>
                     );
@@ -239,7 +252,7 @@ export default function Planner({
                       key={`${day}-${slotNum}`}
                       type="button"
                       onClick={() => openAssignModalForSlot(day, slotNum)}
-                      className="flex flex-col items-start gap-2 rounded-xl border border-dashed border-border bg-card-alt p-3 text-left transition hover:border-accent/50 hover:bg-card"
+                      className="flex flex-col items-start gap-2 rounded-xl border border-dashed border-border bg-card-alt p-3 text-left shadow-soft transition hover:border-accent/50 hover:bg-card"
                     >
                       <span className="text-[10px] font-bold uppercase text-text-muted">
                         Slot {slotNum}

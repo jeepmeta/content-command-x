@@ -1,19 +1,24 @@
 @import "tailwindcss";
 
 @theme {
-  --color-bg: #0a0a0a;
-  --color-card: #171717;
-  --color-card-alt: #111111;
-  --color-border: #262626;
-  --color-text: #e5e5e5;
-  --color-text-muted: #a3a3a3;
+  /* Slightly lifted dark theme – more gray, less pure black */
+  --color-bg: #121214;
+  --color-card: #1c1c1f;
+  --color-card-alt: #18181b;
+  --color-border: #2e2e33;
+  --color-text: #ececef;
+  --color-text-muted: #a1a1aa;
   --color-accent: #f59e0b;
   --color-accent-dark: #d97706;
   --color-success: #34d399;
   --color-danger: #ef4444;
-  --color-neutral: #525252;
+  --color-neutral: #71717a;
 
   --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+
+  /* Soft elevation shadows */
+  --shadow-card: 0 4px 14px -2px rgb(0 0 0 / 0.35), 0 2px 6px -1px rgb(0 0 0 / 0.2);
+  --shadow-soft: 0 2px 8px -1px rgb(0 0 0 / 0.25);
 }
 
 * {
@@ -30,6 +35,14 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text);
   overflow: hidden;
+}
+
+/* Soft card elevation utility */
+.shadow-card {
+  box-shadow: var(--shadow-card);
+}
+.shadow-soft {
+  box-shadow: var(--shadow-soft);
 }
 
 /* Custom scrollbar */
