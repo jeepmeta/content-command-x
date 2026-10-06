@@ -108,11 +108,7 @@ export default function PostCard({
       draggable={draggable}
       onDragStart={onDragStart}
     >
-      <button
-        type="button"
-        onClick={onClick}
-        className="w-full text-left focus:outline-none"
-      >
+      <button type="button" onClick={onClick} className="w-full text-left focus:outline-none">
         <div className="mb-2 flex items-center justify-between gap-2">
           <CategoryBadge categoryName={post.category} config={config} size={isCompact ? 'sm' : 'md'} />
           <div className="flex items-center gap-1">
@@ -194,7 +190,8 @@ export default function PostCard({
               )}
               {onMarkPosted && (
                 <button
-                  type="button"\caption className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs font-bold text-success hover:bg-card-alt"
+                  type="button"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-left text-xs font-bold text-success hover:bg-card-alt"
                   onClick={(e) => {
                     e.stopPropagation();
                     onMarkPosted();
