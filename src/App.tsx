@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Calendar, Inbox, Settings, Plus, X, Keyboard } from 'lucide-react';
+import { Plus, X, Keyboard } from 'lucide-react';
 import { useContentStore } from './hooks/useContentStore';
 import Planner from './components/Planner';
 import Vault from './components/Vault';
 import Topics from './components/Topics';
 import PostModal from './components/PostModal';
 import AssignModal from './components/AssignModal';
+import SidebarVault from './components/SidebarVault';
 import type { Post, Day } from './types';
 import { DAYS } from './constants';
 
@@ -71,7 +72,6 @@ export default function App() {
     progressPercentage,
     filteredDrafts,
     getTopicConfig,
-    plannedPostsForWeek,
   } = store;
 
   const showToast = useCallback((msg: string) => {
@@ -126,8 +126,9 @@ export default function App() {
     setSelectedSlot(null);
   };
 
+  /** Only mutates state when dropped on a valid slot — otherwise source stays put */
   const handleDropPost = (postId: string, day: Day, slot: number) => {
-    if (!selectedWeekId) return;
+    if (!selectedWeekId || !postId) return;
     schedulePostToSlot(postId, selectedWeekId, day, slot);
     showToast('Scheduled');
   };
@@ -184,7 +185,6 @@ export default function App() {
     }
   };
 
-  // Keyboard shortcuts
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement;
@@ -228,15 +228,8 @@ export default function App() {
     );
   }
 
-  const tabs = [
-    { key: 'planner' as const, label: 'Planner', icon: Calendar, hint: 'P' },
-    { key: 'vault' as const, label: 'Vault', icon: Inbox, hint: 'V' },
-    { key: 'topics' as const, label: 'Topics', icon: Settings, hint: 'T' },
-  ];
-
   return (
     <div className="flex h-full flex-col bg-bg">
-      {/* Header */}
       <header className="flex shrink-0 items-center justify-between border-b border-border px-5 py-3">
         <div>
           <p className="text-xs font-extrabold tracking-[0.2em] text-accent">JEEPMETA</p>
@@ -261,28 +254,13 @@ export default function App() {
       </header>
 
       <div className="flex min-h-0 flex-1">
-        <nav className="flex w-48 shrink-0 flex-col gap-1 border-r border-border bg-card-alt p-3">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.key;
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm font-bold transition ${
-                  isActive
-                    ? 'bg-bg text-accent'
-                    : 'text-text-muted hover:bg-card hover:text-text'
-                }`}
-              >
-                <Icon size={18} />
-                <span className="flex-1">{tab.label}</span>
-                <kbd className="rounded bg-bg/50 px-1 font-mono text-[10px] opacity-60">{tab.hint}</kbd>
-              </button>
-            );
-          })}
-        </nav>
+        <SidebarVault
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          draftPosts={draftPosts}
+          getTopicConfig={getTopicConfig}
+          onOpenPost={openEditModal}
+        />
 
         <main className="min-w-0 flex-1">
           {activeTab === 'planner' && (
@@ -377,7 +355,6 @@ export default function App() {
         getTopicConfig={getTopicConfig}
       />
 
-      {/* Onboarding */}
       {!hasSeenOnboarding && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
           <div className="w-full max-w-md rounded-2xl border border-border bg-card p-6 shadow-card">
@@ -391,23 +368,17 @@ export default function App() {
               <li>
                 <strong className="text-text">1. Craft</strong> — Hit{' '}
                 <kbd className="rounded bg-card-alt px-1 font-mono text-xs">C</kbd> or the amber
-                button to drop ideas in the Vault.
+                button. Drafts show in the left sidebar.
               </li>
               <li>
-                <strong className="text-text">2. Plan</strong> — Drag a draft onto a slot, or click an
-                empty slot to assign.
+                <strong className="text-text">2. Plan</strong> — Drag from the sidebar onto a slot, or
+                between slots. Drop outside = stays put.
               </li>
               <li>
-                <strong className="text-text">3. Ship</strong> — Mark posts as posted when they go
-                live. Export a day/week anytime.
+                <strong className="text-text">3. Ship</strong> — Mark posted when live. Export a
+                day/week anytime.
               </li>
             </ol>
-            <p className="mb-4 text-xs text-text-muted">
-              Shortcuts: <kbd className="rounded bg-card-alt px-1 font-mono">P</kbd> Planner ·{' '}
-              <kbd className="rounded bg-card-alt px-1 font-mono">V</kbd> Vault ·{' '}
-              <kbd className="rounded bg-card-alt px-1 font-mono">T</kbd> Topics ·{' '}
-              <kbd className="rounded bg-card-alt px-1 font-mono">Esc</kbd> close
-            </p>
             <button
               type="button"
               onClick={dismissOnboarding}
@@ -419,7 +390,6 @@ export default function App() {
         </div>
       )}
 
-      {/* Toast */}
       {toast && (
         <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl border border-border bg-card px-4 py-2 text-sm font-bold text-text shadow-card">
           {toast}
