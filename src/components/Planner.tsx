@@ -50,6 +50,10 @@ function MediaIcon({ media, color }: { media: Post['media']; color?: string }) {
   return <Type size={12} className="text-neutral" />;
 }
 
+function readPostId(e: React.DragEvent): string {
+  return e.dataTransfer.getData('text/post-id') || e.dataTransfer.getData('text/plain') || '';
+}
+
 export default function Planner({
   weeks,
   selectedWeekId,
@@ -77,7 +81,6 @@ export default function Planner({
 }: PlannerProps) {
   return (
     <div className="flex h-full flex-col overflow-hidden">
-      {/* Topic balance */}
       <div className="border-b border-border bg-card-alt px-5 py-3">
         <div className="mb-2 flex items-center justify-between">
           <p className="text-[10px] font-extrabold uppercase tracking-widest text-text-muted">
@@ -118,7 +121,6 @@ export default function Planner({
         </div>
       </div>
 
-      {/* Progress */}
       <div className="border-b border-border px-5 py-3">
         <div className="mb-2 flex items-center justify-between">
           <span className="text-[11px] font-bold uppercase tracking-wider text-text-muted">
@@ -145,7 +147,6 @@ export default function Planner({
         </div>
       </div>
 
-      {/* Week selector */}
       <div className="flex items-center gap-3 overflow-x-auto border-b border-border px-5 py-3">
         {weeks.map((week) => {
           const isSelected = selectedWeekId === week.id;
@@ -207,7 +208,6 @@ export default function Planner({
         </div>
       </div>
 
-      {/* Days grid */}
       <div className="flex-1 overflow-y-auto p-5">
         <div className="grid gap-4 lg:grid-cols-7">
           {DAYS.map((day) => (
@@ -243,12 +243,17 @@ export default function Planner({
                         draggable
                         onDragStart={(e) => {
                           e.dataTransfer.setData('text/post-id', postInSlot.id);
+                          e.dataTransfer.setData('text/plain', postInSlot.id);
                           e.dataTransfer.effectAllowed = 'move';
                         }}
-                        onDragOver={(e) => e.preventDefault()}
+                        onDragOver={(e) => {
+                          e.preventDefault();
+                          e.dataTransfer.dropEffect = 'move';
+                        }}
                         onDrop={(e) => {
                           e.preventDefault();
-                          const postId = e.dataTransfer.getData('text/post-id');
+                          e.stopPropagation();
+                          const postId = readPostId(e);
                           if (postId) onDropPost(postId, day, slotNum);
                         }}
                       >
@@ -307,6 +312,7 @@ export default function Planner({
                       onClick={() => openAssignModalForSlot(day, slotNum)}
                       onDragOver={(e) => {
                         e.preventDefault();
+                        e.dataTransfer.dropEffect = 'move';
                         e.currentTarget.classList.add('border-accent', 'bg-accent/5');
                       }}
                       onDragLeave={(e) => {
@@ -314,8 +320,9 @@ export default function Planner({
                       }}
                       onDrop={(e) => {
                         e.preventDefault();
+                        e.stopPropagation();
                         e.currentTarget.classList.remove('border-accent', 'bg-accent/5');
-                        const postId = e.dataTransfer.getData('text/post-id');
+                        const postId = readPostId(e);
                         if (postId) onDropPost(postId, day, slotNum);
                       }}
                       className="flex flex-col items-start gap-2 rounded-xl border border-dashed border-border bg-card-alt p-3 text-left shadow-soft transition hover:border-accent/50 hover:bg-card"
@@ -336,12 +343,10 @@ export default function Planner({
         </div>
       </div>
 
-      {/* Dock */}
       <div className="border-t border-border px-5 py-3">
         <p className="flex items-center gap-2 text-xs text-text-muted">
           <Inbox size={14} />
-          {draftCount} drafts ready — drag from Vault or click empty slots. Press{' '}
-          <kbd className="rounded bg-card-alt px-1 font-mono text-[10px]">C</kbd> to craft.
+          {draftCount} drafts in sidebar — drag onto a slot. Drop outside a slot and nothing moves.
         </p>
       </div>
     </div>
